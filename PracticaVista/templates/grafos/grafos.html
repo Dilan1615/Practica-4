@@ -1,0 +1,146 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Grafos</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f4f8; 
+            font-family: 'Arial', sans-serif; 
+            margin: 0;
+            padding: 0;
+            color: #333; 
+        }
+
+        h2 {
+            text-align: center;
+            color: #b91c1c; 
+            margin-top: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        #mynetwork {
+            width: 90%;
+            height: 600px;
+            border: 2px solid #e5e7eb;
+            background-color: #ffffff;
+            margin: 30px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .footer {
+            background-color: #1f2937; 
+            color: #f3f4f6; 
+            text-align: center;
+            padding: 15px;
+            margin-top: 50px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Visualización del Grafo</h2>
+        <div id="mynetwork"></div>
+    </div>
+    
+    <script>
+        const graphData = JSON.parse('{{ graph_data | tojson | safe }}');
+
+        if (graphData && graphData.nodes && graphData.edges) {
+            const nodes = new vis.DataSet(graphData.nodes.map(node => ({
+                id: node.id,                
+                label: `${node.id}: ${node.name}`,
+                color: {
+                    background: '#f87171', // Rojo suave para el fondo del nodo
+                    border: '#b91c1c',     // Rojo más oscuro para el borde
+                    highlight: {
+                        background: '#fc8181', // Color resaltado del nodo
+                        border: '#9b2c2c',     // Color de borde resaltado
+                    }
+                },
+                size: 20,
+                font: {
+                    size: 18,
+                    face: 'Arial',
+                    color: '#ffffff', // Texto blanco para los nodos
+                    align: 'center',
+                },
+                borderWidth: 3,
+                shape: 'ellipse',
+            })));
+
+            const edges = new vis.DataSet(graphData.edges.map(edge => ({
+                from: edge.from,
+                to: edge.to,
+                color: {
+                    color: '#b91c1c', // Color de las flechas rojo cálido
+                    highlight: '#fc8181', // Color de la flecha cuando se resalta
+                },
+                label: edge.weight.toString(),
+                font: { size: 16, align: 'top' }, 
+                width: 2,
+                arrows: {
+                    to: {
+                        enabled: true,
+                        scaleFactor: 0.5, // Tamaño de las flechas
+                    }
+                },
+            })));
+
+            const container = document.getElementById('mynetwork');
+            const data = { nodes, edges };
+
+            const options = {
+                nodes: {
+                    shape: 'ellipse',
+                    size: 30,
+                    font: { size: 18, align: 'center' },
+                },
+                edges: {
+                    arrows: 'to',
+                    physics: true, 
+                },
+                physics: {
+                    enabled: true,
+                    barnesHut: {
+                        gravitationalConstant: -5000, 
+                        centralGravity: 0.1, 
+                        springLength: 300, 
+                        springConstant: 0.02, 
+                    },
+                    repulsion: {
+                        springLength: 500, 
+                    },
+                    stabilization: { iterations: 200 },
+                },
+                layout: {
+                    randomSeed: 1, 
+                    improvedLayout: true,
+                },
+            };
+
+            new vis.Network(container, data, options);
+        } else {
+            console.error("Error: No se encontraron datos de grafo");
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

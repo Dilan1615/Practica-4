@@ -1,0 +1,137 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="flex justify-center p-6">
+    <div class="w-full max-w-3xl bg-gray-800 p-10 rounded-lg shadow-lg">
+
+        <h1 class="text-3xl font-semibold text-green-600 text-center mb-6">Ejecutar Algoritmos de Grafos</h1>
+
+        <div class="flex space-x-6 mb-6">
+
+            <div id="bfsSection" class="w-1/2">
+                <h2 class="text-2xl font-semibold text-green-600 text-center mb-4">Ejecutar BFS</h2>
+                <form id="bfsForm" method="POST" class="space-y-6">
+                    <div>
+                        <label for="origen" class="block text-lg font-medium text-white">Origen:</label>
+                        <select id="origen" name="origen"
+                            class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for habitacion in data %}
+                            <option value="{{ habitacion.labelId }}">{{ habitacion.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" id="bfsSubmit"
+                        class="inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 w-full">Ejecutar
+                        BFS</button>
+                </form>
+            </div>
+            <div id="caminoCortoSection" class="w-1/2">
+                <h2 class="text-2xl font-semibold text-green-600 text-center mb-4">Calcular Camino Corto</h2>
+                <form id="caminoCortoForm" method="POST" class="space-y-6">
+                    <div>
+                        <label for="origenCamino" class="block text-lg font-medium text-white">Origen:</label>
+                        <select id="origenCamino" name="origen"
+                            class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for habitacion in data %}
+                            <option value="{{ habitacion.labelId }}">{{ habitacion.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="destino" class="block text-lg font-medium text-white">Destino:</label>
+                        <select id="destino" name="destino"
+                            class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for habitacion in data %}
+                            <option value="{{ habitacion.labelId }}">{{ habitacion.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="algoritmo" class="block text-lg font-medium text-white">Algoritmo:</label>
+                        <select id="algoritmo" name="algoritmo"
+                            class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            <option value="1">Floyd-Warshall</option>
+                            <option value="2">Bellman-Ford</option>
+                        </select>
+                    </div>
+                    <button type="button" id="caminoCortoSubmit"
+                        class="inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 w-full">Calcular
+                        Camino Corto</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="result" class="mt-6 text-center hidden">
+            <div class="bg-gray-700 text-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl text-center text-red-400 mb-2">Resultado:</h2>
+                <p id="resultadoText" class="text-lg"></p>
+            </div>
+        </div>
+
+        <div id="loadingMessage" class="mt-4 text-yellow-300 hidden text-center">
+            Cargando...
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Calcula el camino corto
+    document.getElementById('caminoCortoSubmit').addEventListener('click', async function () {
+        const origen = document.getElementById('origenCamino').value;
+        const destino = document.getElementById('destino').value;
+        const algoritmo = document.getElementById('algoritmo').value;
+
+        document.getElementById('loadingMessage').classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/caminoCorto/${origen}/${destino}/${algoritmo}`);
+            const data = await response.json();
+            document.getElementById('loadingMessage').classList.add('hidden');
+
+            if (data.error) {
+                document.getElementById('resultadoText').innerText = `Error: ${data.error}`;
+                document.getElementById('result').classList.remove('hidden');
+            } else {
+                // Mostrar solo el camino encontrado, sin detalles adicionales
+                const camino = data.data;  // Asumiendo que "data" contiene el camino
+                document.getElementById('resultadoText').innerText = `Camino encontrado: ${camino}`;
+                document.getElementById('result').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error al calcular el camino corto:', error);
+            document.getElementById('loadingMessage').classList.add('hidden');
+            document.getElementById('resultadoText').innerText = 'Error al conectarse con el servidor.';
+            document.getElementById('result').classList.remove('hidden');
+        }
+    });
+
+    // Ejecuta bsf
+    document.getElementById('bfsSubmit').addEventListener('click', async function () {
+        const origen = document.getElementById('origen').value;
+
+      
+        document.getElementById('loadingMessage').classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/bfs/${origen}`);
+            const data = await response.json();
+            document.getElementById('loadingMessage').classList.add('hidden');
+
+            if (data.error) {
+                document.getElementById('resultadoText').innerText = `Error: ${data.error}`;
+                document.getElementById('result').classList.remove('hidden');
+            } else {
+                const camino = data.data;
+                document.getElementById('resultadoText').innerText = `Resultado BFS: ${JSON.stringify(data)}`;
+                document.getElementById('result').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error al ejecutar BFS:', error);
+            document.getElementById('loadingMessage').classList.add('hidden');
+            document.getElementById('resultadoText').innerText = 'Error al conectarse con el servidor.';
+            document.getElementById('result').classList.remove('hidden');
+        }
+    });
+</script>
+{% endblock %}

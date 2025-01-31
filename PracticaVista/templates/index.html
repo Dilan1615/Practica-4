@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Practica3</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="static/img/sus.png" rel="icon">
+
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
+
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-poppins">
+
+  <header class="bg-gradient-to-r from-teal-500 to-indigo-600 text-white py-6 shadow-lg sticky top-0 z-50 transition-all">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="text-3xl font-bold tracking-wide hover:scale-105 transition-all">Habitacions Grafos</a>
+      <nav>
+        <ul class="flex space-x-8">
+          <li><a href='/mapagrafos' class="text-lg hover:text-teal-300 transition-colors">Mapa de Mis Grafos</a></li>
+          <li><a href="/adyacencias" class="text-lg hover:text-teal-300 transition-colors">Matriz de adyacencia</a></li>
+          <li><a href="/camino" class="text-lg hover:text-teal-300 transition-colors">Buscar Camino</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="py-10">
+    <div class="container mx-auto">
+      <section class="bg-white rounded-lg shadow-lg p-8 space-y-6">
+        <h1 class="text-4xl font-semibold text-teal-600 mb-6">Bienvenido a Habitacions Grafos</h1>
+        <p class="text-lg text-gray-600">Explora y visualiza grafos interactivos de manera sencilla y eficiente.</p>
+
+        <!-- Content Block -->
+        <div class="mt-6">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="bg-teal-600 text-gray-200 py-6">
+    <div class="container mx-auto text-center">
+      <p>&copy; 2025 Practica3. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="fixed bottom-4 right-4 bg-teal-500 text-white p-3 rounded-full shadow-lg hover:bg-teal-600 transition-all">
+    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+  </a>
+
+  <!-- Preloader -->
+  <div id="preloader" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center hidden">
+    <div class="spinner border-t-4 border-teal-500 rounded-full w-16 h-16 animate-spin"></div>
+  </div>
+
+  <!-- Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js')}}"></script>
+</body>
+
+</html>
